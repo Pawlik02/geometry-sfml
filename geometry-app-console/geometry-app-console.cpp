@@ -1,5 +1,13 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/System.hpp>
+#include "Polygon.h"
+#include "Application.h"
 
 int main() {
-	std::cout << "Hello world!\n";
+	Application app;
+	app.start();
 }
