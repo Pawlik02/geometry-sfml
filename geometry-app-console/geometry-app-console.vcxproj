@@ -137,15 +137,15 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Figure.cpp" />
     <ClCompile Include="geometry-app-console.cpp" />
-    <ClCompile Include="Point.cpp" />
     <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="TextBox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Button.h" />
-    <ClInclude Include="Point.h" />
+    <ClInclude Include="Figure.h" />
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="TextBox.h" />
   </ItemGroup>

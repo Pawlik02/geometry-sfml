@@ -1,14 +1,13 @@
 #pragma once
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include "Point.h"
+#include "Figure.h"
 
-class Polygon: public sf::Shape
+class Polygon: public Figure
 {
 	public:
 		Polygon(std::string name, std::vector<sf::Vector2f> verticies);
 		~Polygon();
-		std::string name;
 		std::vector<sf::Vector2f> verticies;
 
 	private:

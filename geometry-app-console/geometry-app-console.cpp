@@ -5,7 +5,6 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include "Polygon.h"
-#include "Point.h"
 #include "Application.h"
 
 int main() {

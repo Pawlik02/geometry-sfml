@@ -12,9 +12,12 @@ class Application
 		void start();
 
 	private:
-		sf::RenderWindow window = { sf::VideoMode(1000, 600), "Geometry SFML" };
-		std::vector<Polygon> shapesList;
-		template<typename shapeType>
-		void addShape(shapeType shape);
-		void createPolygon(sf::Event event, TextBox& textBox);
+		sf::RenderWindow window = { sf::VideoMode(800, 800), "Geometry SFML" };
+		std::vector<Figure*> figuresList;
+		bool isFigureSelected = false;
+		Figure* selectedFigure;
+		void addFigure(Figure* figure);
+		void deleteFigure();
+		void reloadMenuButtons();
+		void createPolygon(sf::Event event, TextBox& textBox, sf::Font& font);
 };

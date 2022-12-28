@@ -3,6 +3,7 @@
 Polygon::Polygon(std::string name, std::vector<sf::Vector2f> verticies) {
 	this->name = name;
 	this->verticies = verticies;
+	std::cout << "Polygon constructor\n";
 }
 
 Polygon::~Polygon() {

@@ -7,8 +7,6 @@
 TextBox::TextBox(sf::Vector2f size, sf::Vector2f position, int characterSize, sf::Color color, sf::Font& font) {
 	this->boxVisual.setSize(size);
 	this->boxVisual.setPosition(position);
-	this->boxVisual.setOutlineThickness(1);
-	this->boxVisual.setOutlineColor(sf::Color::Black);
 	this->boxVisual.setFillColor(sf::Color(208, 208, 208));
 	this->textVisual.setPosition(position + sf::Vector2f(5, 5));
 	this->textVisual.setCharacterSize(characterSize);
@@ -30,6 +28,9 @@ void TextBox::textEntered(sf::Event event) {
 	}
 	else if (event.text.unicode == ESCAPE_KEY) {}
 	else {
+		if (this->textStream.str().length() % 100 == 0) {
+			this->textStream << '\n';
+		}
 		this->textStream << static_cast<char>(event.text.unicode);
 	}
 	this->textVisual.setString(textStream.str());
