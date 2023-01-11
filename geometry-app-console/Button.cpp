@@ -34,6 +34,10 @@ void Button::setColor(sf::Color color) {
 	this->buttonVisual.setFillColor(color);
 }
 
+sf::Color Button::getColor() {
+	return this->buttonVisual.getFillColor();
+}
+
 void Button::setPosition(sf::Vector2f position) {
 	this->buttonVisual.setPosition(position);
 	this->textVisual.setPosition(position + sf::Vector2f(5, 5));

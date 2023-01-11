@@ -11,8 +11,9 @@ public:
     int getRadius() const;
     double getArea() const;
     double getPerimeter() const;
-    void updateFigure(TextInput* nameInput, TextInput* verticiesInput);
-    void updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput);
+    void updateFigure(TextInput* nameInput, TextInput* verticiesInput, sf::Color color);
+    void updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput, sf::Color color);
+    std::string print();
 
 private:
     void setRadius(int radius);
