@@ -17,14 +17,14 @@ Rectangle::~Rectangle() {
 }
 
 double Rectangle::getArea() const {
-	return this->dimensions.x * this->dimensions.y;
+	return abs(this->dimensions.x * this->dimensions.y);
 }
 
 double Rectangle::getPerimeter() const {
-	return 2 * this->dimensions.x + 2 * this->dimensions.y;
+	return abs(2 * this->dimensions.x + 2 * this->dimensions.y);
 }
 
-void Rectangle::updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput) {
+void Rectangle::updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput, sf::Color color) {
 	std::string positionText = positionInput->textStream.str();
 	sf::Vector2f position;
 	std::string tempNumber;
@@ -85,9 +85,11 @@ void Rectangle::updateFigure(TextInput* nameInput, TextInput* positionInput, Tex
 	this->name = nameInput->textStream.str();
 	this->setPosition(position);
 	this->dimensions = dimensions;
-	this->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 53 + static_cast<float>(app->figuresList.size() - 1) * 50),
-		sf::Color::Yellow, app->font, this->name + "\nArea:" + std::to_string(this->getArea())
-		+ std::to_string(this->getArea()) + "\nPerimeter:" + std::to_string(this->getPerimeter()) };
+	this->setFillColor(color);
+	this->setOutlineColor(color);
+	this->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 178 + static_cast<float>(app->figuresList.size() - 1) * 50),
+		sf::Color::Yellow, app->font, this->name + "\nArea:" + std::to_string(this->getArea()) + "\nPerimeter:" +
+		std::to_string(this->getPerimeter()) };
 	this->update();
 }
 
@@ -103,4 +105,22 @@ sf::Vector2f Rectangle::getPoint(std::size_t index) const {
 		case 2: return sf::Vector2f(this->dimensions.x, -this->dimensions.y);
 		case 3: return sf::Vector2f(0, -this->dimensions.y);
 	}
+}
+
+std::string Rectangle::print() {
+	std::string position;
+	std::string dimensions;
+	std::string color;
+	position += "(";
+	position += std::to_string(this->getPosition().x - 300);
+	position += ", ";
+	position += std::to_string(-this->getPosition().y + 300);
+	position += ")";
+	dimensions += "(";
+	dimensions += std::to_string(this->dimensions.x);
+	dimensions += ", ";
+	dimensions += std::to_string(this->dimensions.y);
+	dimensions += ")";
+	color = "(" + std::to_string(this->getFillColor().r) + ", " + std::to_string(this->getFillColor().g) + ", " + std::to_string(this->getFillColor().b) + ")";
+	return "{\"type\":\"Rectangle\",\"name\":\"" + this->name + "\",\"position\":\"" + position + "\",\"dimensions\":\"" + dimensions + "\",\"color\":\"" + color + "\"}\n";
 }

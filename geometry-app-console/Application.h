@@ -14,13 +14,15 @@ class Application
 		std::vector<Figure*> figuresList;
 		std::vector<TextInput*> textInputList;
 		std::vector<Button*> buttonList;
+		std::vector<Button*> colorList;
 		sf::Font getFont();
 		void addFigure(Figure* figure);
-		void createPolygon(TextInput* nameInput, TextInput* verticiesInput);
-		void createRectangle(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput);
-		void createCircle(TextInput* nameInput, TextInput* positionInput, TextInput* radiusInput);
-		void createSquare(TextInput* nameInput, TextInput* positionInput, TextInput* widthInput);
+		void createPolygon(std::string nameInput, std::string verticiesInput, sf::Color color);
+		void createRectangle(std::string nameInput, std::string positionInput, std::string dimensionsInput, sf::Color color);
+		void createCircle(std::string nameInput, std::string positionInput, std::string radiusInput, sf::Color color);
+		void createSquare(std::string nameInput, std::string positionInput, std::string widthInput, sf::Color color);
 		sf::Font font;
+		int exceptionNumber = 1;
 
 	private:
 		static Application* instancePtr;
@@ -30,5 +32,8 @@ class Application
 		Figure* selectedFigure = nullptr;
 		TextInput* selectedTextInput = nullptr;
 		Button* selectedFigureType = nullptr;
+		Button* selectedColor = nullptr;
 		void reloadMenuButtons();
+		void saveToFile(TextInput* fileNameInput);
+		void loadFromFile(TextInput* fileNameInput);
 };

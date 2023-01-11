@@ -16,7 +16,7 @@ double Square::getArea() const {
 }
 
 double Square::getPerimeter() const {
-	return this->width * 4;
+	return abs(this->width * 4);
 }
 
 sf::Vector2f Square::getPoint(std::size_t index) const {
@@ -29,7 +29,7 @@ sf::Vector2f Square::getPoint(std::size_t index) const {
 	}
 }
 
-void Square::updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* widthInput) {
+void Square::updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* widthInput, sf::Color color) {
 	std::string positionText = positionInput->textStream.str();
 	sf::Vector2f position;
 	std::string tempNumber;
@@ -62,9 +62,24 @@ void Square::updateFigure(TextInput* nameInput, TextInput* positionInput, TextIn
 	Application* app = Application::getInstance();
 	this->name = nameInput->textStream.str();
 	this->setPosition(position);
+	this->setFillColor(color);
+	this->setOutlineColor(color);
 	this->width = std::stoi(widthInput->textStream.str());
-	this->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 53 + static_cast<float>(app->figuresList.size() - 1) * 50),
-		sf::Color::Yellow, app->font, this->name + "\nArea:" + std::to_string(this->getArea())
-		+ std::to_string(this->getArea()) + "\nPerimeter:" + std::to_string(this->getPerimeter()) };
+	this->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 178 + static_cast<float>(app->figuresList.size() - 1) * 50),
+		sf::Color::Yellow, app->font, this->name + "\nArea:" + std::to_string(this->getArea()) + "\nPerimeter:" +
+		std::to_string(this->getPerimeter()) };
 	this->update();
+}
+
+std::string Square::print() {
+	std::string position;
+	std::string dimensions;
+	std::string color;
+	position += "(";
+	position += std::to_string(this->getPosition().x - 300);
+	position += ", ";
+	position += std::to_string(-this->getPosition().y + 300);
+	position += ")";
+	color = "(" + std::to_string(this->getFillColor().r) + ", " + std::to_string(this->getFillColor().g) + ", " + std::to_string(this->getFillColor().b) + ")";
+	return "{\"type\":\"Square\",\"name\":\"" + this->name + "\",\"position\":\"" + position + "\",\"width\":\"" + std::to_string(this->width) + "\",\"color\":\"" + color + "\"}\n";
 }

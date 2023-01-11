@@ -38,7 +38,7 @@ std::size_t Circle::getPointCount() const {
 }
 
 sf::Vector2f Circle::getPoint(std::size_t index) const {
-    float angle = index * 2 * pi / this->pointCount - pi / 2;
+    float angle = static_cast<float>(index * 2 * pi / this->pointCount - pi / 2);
     float x = std::cos(angle) * this->radius;
     float y = std::sin(angle) * this->radius;
 
@@ -53,11 +53,11 @@ double Circle::getPerimeter() const {
 	return 2 * pi * this->radius;
 }
 
-void Circle::updateFigure(TextInput* nameInput, TextInput* verticiesInput) {
+void Circle::updateFigure(TextInput* nameInput, TextInput* verticiesInput, sf::Color color) {
     std::cout << "MOCKUP";
 }
 
-void Circle::updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput) {
+void Circle::updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput, sf::Color color) {
 	std::string positionText = positionInput->textStream.str();
 	sf::Vector2f position;
 	std::string tempNumber;
@@ -91,9 +91,23 @@ void Circle::updateFigure(TextInput* nameInput, TextInput* positionInput, TextIn
 	this->name = nameInput->textStream.str();
 	this->setPosition(position);
 	this->radius = std::stoi(dimensionsInput->textStream.str());
+	this->setFillColor(color);
 	this->setOrigin(static_cast<float>(this->getRadius()), static_cast<float>(this->getRadius()));
-	this->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 53 + static_cast<float>(app->figuresList.size() - 1) * 50),
-		sf::Color::Yellow, app->font, this->name + "\nArea:" + std::to_string(this->getArea())
-		+ std::to_string(this->getArea()) + "\nPerimeter:" +std::to_string(this->getPerimeter()) };
+	this->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 178 + static_cast<float>(app->figuresList.size() - 1) * 50),
+		sf::Color::Yellow, app->font, this->name + "\nArea:" + std::to_string(this->getArea()) + "\nPerimeter:" +
+		std::to_string(this->getPerimeter()) };
 	this->update();
+}
+
+std::string Circle::print() {
+	std::string position;
+	std::string dimensions;
+	std::string color;
+	position += "(";
+	position += std::to_string(this->getPosition().x - 300);
+	position += ", ";
+	position += std::to_string(-this->getPosition().y + 300);
+	position += ")";
+	color = "(" + std::to_string(this->getFillColor().r) + ", " + std::to_string(this->getFillColor().g) + ", " + std::to_string(this->getFillColor().b) + ")";
+	return "{\"type\":\"Circle\",\"name\":\"" + this->name + "\",\"position\":\"" + position + "\",\"radius\":\"" + std::to_string(this->radius) + "\",\"color\":\"" + color + "\"}\n";
 }

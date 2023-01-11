@@ -8,7 +8,8 @@ class Rectangle: public Polygon
 		~Rectangle();
 		double getArea() const;
 		double getPerimeter() const;
-		void updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput);
+		void updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput, sf::Color color);
+		std::string print();
 		sf::Vector2f dimensions;
 
 	private:

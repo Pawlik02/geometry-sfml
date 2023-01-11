@@ -10,10 +10,8 @@ class Button
 		void draw(sf::RenderWindow& window);
 		bool isMouseOver(sf::RenderWindow& window);
 		void setColor(sf::Color color);
+		sf::Color getColor();
 		void setPosition(sf::Vector2f position);
 		sf::Text textVisual;
-
-	private:
-		sf::RectangleShape buttonVisual;
-		
+		sf::RectangleShape buttonVisual;	
 };

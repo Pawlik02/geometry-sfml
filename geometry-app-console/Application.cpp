@@ -1,13 +1,15 @@
 #include "Application.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <fstream>
+#include <string>
 #include "Polygon.h"
 #include "Rectangle.h"
 #include "Circle.h"
 #include "Square.h"
 #include "TextInput.h"
 #include "Button.h"
-#include <string>
+#include "Exception.h"
 
 Application* Application::instancePtr = NULL;
 
@@ -59,55 +61,53 @@ void Application::deleteFigure(std::string name) {
 
 void Application::reloadMenuButtons() {
 	for (int i = 0; i < this->figuresList.size(); i++) {
-		this->figuresList[i]->menuButton.setPosition(sf::Vector2f(603, 53 + static_cast<float>(i) * 50));
+		this->figuresList[i]->menuButton.setPosition(sf::Vector2f(603, 178 + static_cast<float>(i) * 50));
 	}
 }
 
-void Application::createPolygon(TextInput* nameInput, TextInput* verticiesInput) {
-	std::string verticiesText = verticiesInput->textStream.str();
+void Application::createPolygon(std::string nameInput, std::string verticiesInput, sf::Color color) {
 	std::string tempNumber;
 	std::vector<sf::Vector2f> verticies;
 	int x = 0, y = 0;
-	for (int i = 0; i < verticiesText.length(); i++) {
-		if (verticiesText[i] == '\n') {
+	for (int i = 0; i < verticiesInput.length(); i++) {
+		if (verticiesInput[i] == '\n') {
 			continue;
 		}
-		else if (verticiesText[i] == '(') {
+		else if (verticiesInput[i] == '(') {
 			tempNumber = "";
 		}
-		else if (verticiesText[i] == ')') {
+		else if (verticiesInput[i] == ')') {
 			y = std::stoi(tempNumber);
 			tempNumber = "";
 			verticies.push_back(sf::Vector2f(static_cast<float>(x) + 300, static_cast<float>(-y) + 300));
 			x = 0;
 			y = 0;
 		}
-		else if (verticiesText[i] == ',') {
+		else if (verticiesInput[i] == ',') {
 			x = std::stoi(tempNumber);
 			tempNumber = "";
 		}
-		else if (verticiesText[i] == ';') {
+		else if (verticiesInput[i] == ';') {
 			tempNumber = "";
 		}
 		else {
-			tempNumber += verticiesText[i];
+			tempNumber += verticiesInput[i];
 		}
 	}
 	if (verticies.size() > 0) {
-		Polygon* polygon = new Polygon(nameInput->textStream.str(), verticies);
-		polygon->setFillColor(sf::Color::Red);
-		polygon->setFillColor(sf::Color::Red);
+		Polygon* polygon = new Polygon(nameInput, verticies);
+		polygon->setFillColor(color);
+		polygon->setOutlineColor(color);
 		polygon->setOutlineThickness(1);
-		polygon->setOutlineColor(sf::Color::Red);
-		polygon->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 53 + static_cast<float>(this->figuresList.size()) * 50),
+		polygon->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 178 + static_cast<float>(this->figuresList.size()) * 50),
 			sf::Color::Yellow, this->font, polygon->name + "\nArea:" + std::to_string(polygon->getArea()) + "\nPerimeter:" +
 			std::to_string(polygon->getPerimeter()) };
 		this->addFigure(polygon);
 	}
 }
 
-void Application::createRectangle(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput) {
-	std::string positionText = positionInput->textStream.str();
+void Application::createRectangle(std::string nameInput, std::string positionInput, std::string dimensionsInput, sf::Color color) {
+	std::string positionText = positionInput;
 	sf::Vector2f position;
 	std::string tempNumber;
 	int x = 0, y = 0;
@@ -136,7 +136,7 @@ void Application::createRectangle(TextInput* nameInput, TextInput* positionInput
 			tempNumber += positionText[i];
 		}
 	}
-	std::string dimensionsText = dimensionsInput->textStream.str();
+	std::string dimensionsText = dimensionsInput;
 	sf::Vector2f dimensions;
 	for (int i = 0; i < dimensionsText.length(); i++) {
 		if (dimensionsText[i] == '\n') {
@@ -163,19 +163,18 @@ void Application::createRectangle(TextInput* nameInput, TextInput* positionInput
 			tempNumber += dimensionsText[i];
 		}
 	}
-	Rectangle* rectangle = new Rectangle(nameInput->textStream.str(), position, dimensions);
-	rectangle->setFillColor(sf::Color::Red);
-	rectangle->setFillColor(sf::Color::Red);
+	Rectangle* rectangle = new Rectangle(nameInput, position, dimensions);
+	rectangle->setFillColor(color);
+	rectangle->setOutlineColor(color);
 	rectangle->setOutlineThickness(1);
-	rectangle->setOutlineColor(sf::Color::Red);
-	rectangle->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 53 + static_cast<float>(this->figuresList.size()) * 50),
-		sf::Color::Yellow, this->font, rectangle->name + "\nArea:" + std::to_string(rectangle->getArea())
-		+ std::to_string(rectangle->getArea()) + "\nPerimeter:" + std::to_string(rectangle->getPerimeter()) };
+	rectangle->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 178 + static_cast<float>(this->figuresList.size()) * 50),
+		sf::Color::Yellow, this->font, rectangle->name + "\nArea:" + std::to_string(rectangle->getArea()) +"\nPerimeter:" +
+		std::to_string(rectangle->getPerimeter()) };
 	this->addFigure(rectangle);
 }
 
-void Application::createCircle(TextInput* nameInput, TextInput* positionInput, TextInput* radiusInput) {
-	std::string positionText = positionInput->textStream.str();
+void Application::createCircle(std::string nameInput, std::string positionInput, std::string radiusInput, sf::Color color) {
+	std::string positionText = positionInput;
 	sf::Vector2f position;
 	std::string tempNumber;
 	int x = 0, y = 0;
@@ -204,17 +203,17 @@ void Application::createCircle(TextInput* nameInput, TextInput* positionInput, T
 			tempNumber += positionText[i];
 		}
 	}
-	Circle* circle = new Circle(nameInput->textStream.str(), position, std::stoi(radiusInput->textStream.str()));
-	circle->setFillColor(sf::Color::Red);
+	Circle* circle = new Circle(nameInput, position, std::stoi(radiusInput));
+	circle->setFillColor(color);
 	circle->setOrigin(static_cast<float>(circle->getRadius()), static_cast<float>(circle->getRadius()));
-	circle->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 53 + static_cast<float>(this->figuresList.size()) * 50),
-		sf::Color::Yellow, this->font, circle->name + "\nArea:" + std::to_string(circle->getArea()) +
-		std::to_string(circle->getArea()) + "\nPerimeter:" + std::to_string(circle->getPerimeter()) };
+	circle->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 178 + static_cast<float>(this->figuresList.size()) * 50),
+		sf::Color::Yellow, this->font, circle->name + "\nArea:" + std::to_string(circle->getArea()) + "\nPerimeter:" +
+		std::to_string(circle->getPerimeter()) };
 	this->addFigure(circle);
 }
 
-void Application::createSquare(TextInput* nameInput, TextInput* positionInput, TextInput* widthInput) {
-	std::string positionText = positionInput->textStream.str();
+void Application::createSquare(std::string nameInput, std::string positionInput, std::string widthInput, sf::Color color) {
+	std::string positionText = positionInput;
 	sf::Vector2f position;
 	std::string tempNumber;
 	int x = 0, y = 0;
@@ -243,14 +242,13 @@ void Application::createSquare(TextInput* nameInput, TextInput* positionInput, T
 			tempNumber += positionText[i];
 		}
 	}
-	Square* square = new Square(nameInput->textStream.str(), position, std::stoi(widthInput->textStream.str()));
-	square->setFillColor(sf::Color::Red);
-	square->setFillColor(sf::Color::Red);
+	Square* square = new Square(nameInput, position, std::stoi(widthInput));
+	square->setFillColor(color);
+	square->setOutlineColor(color);
 	square->setOutlineThickness(1);
-	square->setOutlineColor(sf::Color::Red);
-	square->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 53 + static_cast<float>(this->figuresList.size()) * 50),
-		sf::Color::Yellow, this->font, square->name + "\nArea:" + std::to_string(square->getArea())
-		+ std::to_string(square->getArea()) + "\nPerimeter:" + std::to_string(square->getPerimeter()) };
+	square->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 178 + static_cast<float>(this->figuresList.size()) * 50),
+		sf::Color::Yellow, this->font, square->name + "\nArea:" + std::to_string(square->getArea()) + "\nPerimeter:" +
+		std::to_string(square->getPerimeter()) };
 	this->addFigure(square);
 }
 
@@ -258,12 +256,348 @@ sf::Font Application::getFont() {
 	return this->font;
 }
 
+void Application::saveToFile(TextInput* fileNameInput) {
+	std::ofstream file;
+	std::string className;
+	file.open("pliki\\" + fileNameInput->textStream.str() + ".txt");
+	for (int i = 0; i < this->figuresList.size(); i++) {
+		className = typeid(*this->figuresList[i]).name();
+		if (className == "class Polygon") {
+			file << *this->figuresList[i];
+		}
+		if (className == "class Rectangle") {
+			file << *this->figuresList[i];
+		}
+		if (className == "class Circle") {
+			file << *this->figuresList[i];
+		}
+		if (className == "class Square") {
+			file << *this->figuresList[i];
+		}
+	}
+	file.close();
+}
+
+void Application::loadFromFile(TextInput* fileNameInput) {
+	std::string name;
+	std::string verticies;
+	std::string position;
+	std::string dimensions;
+	std::string radius;
+	std::string width;
+	std::string colorText;
+	std::string r;
+	std::string g;
+	std::string b;
+
+	bool readValue = false;
+	bool readColorValue = false;
+	int i;
+
+	std::ifstream file;
+	std::string line;
+	file.open("pliki\\" + fileNameInput->textStream.str() + ".txt");
+	while (getline(file, line)) {
+		if (line.substr(0, 26) == "{\"type\":\"Polygon\",\"name\":\"") {
+			i = line.find("name") + 7;
+			while(!readValue) {
+				if (line[i] == '"') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					name += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			i = line.find("verticies") + 12;
+			while (!readValue) {
+				if (line[i] == '"') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					verticies += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			i = line.find("color") + 9;
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					r += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					g += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					b += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			this->createPolygon(name, verticies, sf::Color(std::stoi(r), std::stoi(g), std::stoi(b)));
+		}
+		if (line.substr(0, 28) == "{\"type\":\"Rectangle\",\"name\":\"") {
+			i = line.find("name") + 7;
+			while (!readValue) {
+				if (line[i] == '"') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					name += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			i = line.find("position") + 11;
+			while (!readValue) {
+				if (line[i] == '"') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					position += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			i = line.find("dimensions") + 13;
+			while (!readValue) {
+				if (line[i] == '"') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					dimensions += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			i = line.find("color") + 9;
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					r += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					g += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					b += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+			this->createRectangle(name, position, dimensions, sf::Color(std::stoi(r), std::stoi(g), std::stoi(b)));
+		}
+
+		if (line.substr(0, 25) == "{\"type\":\"Circle\",\"name\":\"") {
+			i = line.find("name") + 7;
+			while (!readValue) {
+				if (line[i] == '"') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					name += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			i = line.find("position") + 11;
+			while (!readValue) {
+				if (line[i] == '"') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					position += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			i = line.find("radius") + 9;
+			while (!readValue) {
+				if (line[i] == '"') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					radius += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			i = line.find("color") + 9;
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					r += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					g += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					b += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+			this->createCircle(name, position, radius, sf::Color(std::stoi(r), std::stoi(g), std::stoi(b)));
+		}
+
+		if (line.substr(0, 25) == "{\"type\":\"Square\",\"name\":\"") {
+			i = line.find("name") + 7;
+			while (!readValue) {
+				if (line[i] == '"') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					name += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			i = line.find("position") + 11;
+			while (!readValue) {
+				if (line[i] == '"') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					position += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			i = line.find("width") + 8;
+			while (!readValue) {
+				if (line[i] == '"') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					width += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			i = line.find("color") + 9;
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					r += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					g += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+
+			while (!readValue) {
+				if (line[i] == ',' || line[i] == ')') {
+					readValue = true;
+				}
+				else if (!readValue) {
+					b += line[i];
+				}
+				i++;
+			}
+			readValue = false;
+			this->createSquare(name, position, width, sf::Color(std::stoi(r), std::stoi(g), std::stoi(b)));
+		}
+
+		name = "";
+		verticies = "";
+		position = "";
+		dimensions = "";
+		radius = "";
+		width = "";
+		colorText = "";
+		r = "";
+		g = "";
+		b = "";
+	}
+	file.close();
+}
+
 void Application::start() {
 	sf::Event event;
 
-	sf::RectangleShape menuBorder(sf::Vector2f(3, 600));
+	sf::RectangleShape menuBorder(sf::Vector2f(3, 800));
 	sf::RectangleShape menuButtonsLine(sf::Vector2f(199, 3));
-	sf::RectangleShape menuTextBoxLine(sf::Vector2f(800, 3));
+	sf::RectangleShape menuTextBoxLine(sf::Vector2f(600, 3));
 	sf::RectangleShape xAxis(sf::Vector2f(600, 1));
 	sf::RectangleShape yAxis(sf::Vector2f(1, 600));
 	menuBorder.setFillColor(sf::Color::Black);
@@ -280,9 +614,11 @@ void Application::start() {
 	TextInput* input1 = new TextInput(sf::Vector2f(200, 200), sf::Vector2f(0, 600), 15, sf::Color::Black, this->font);
 	TextInput* input2 = new TextInput(sf::Vector2f(200, 200), sf::Vector2f(200, 600), 15, sf::Color::Black, this->font);
 	TextInput* input3 = new TextInput(sf::Vector2f(200, 200), sf::Vector2f(400, 600), 15, sf::Color::Black, this->font);
+	TextInput* input4 = new TextInput(sf::Vector2f(197, 25), sf::Vector2f(603, 50), 15, sf::Color::Black, this->font);
 	this->textInputList.push_back(input1);
 	this->textInputList.push_back(input2);
 	this->textInputList.push_back(input3);
+	this->textInputList.push_back(input4);
 
 	Button createFigureButton(sf::Vector2f(50, 25), sf::Vector2f(603, 0), sf::Color(119, 227, 57), this->font, "Create");
 	Button deleteFigureButton(sf::Vector2f(50, 25), sf::Vector2f(653, 0), sf::Color(227, 11, 11), this->font, "Delete");
@@ -296,6 +632,28 @@ void Application::start() {
 	this->buttonList.push_back(rectangleButton);
 	this->buttonList.push_back(circleButton);
 	this->buttonList.push_back(squareButton);
+
+	Button saveFile(sf::Vector2f(100, 25), sf::Vector2f(603, 75), sf::Color(119, 227, 57), this->font, "Save to file");
+	Button loadFile(sf::Vector2f(100, 25), sf::Vector2f(703, 75), sf::Color(119, 227, 57), this->font, "Load from file");
+
+	Button* color1 = new Button(sf::Vector2f(60, 20), sf::Vector2f(606, 103), sf::Color(227, 52, 47), this->font);
+	Button* color2 = new Button(sf::Vector2f(60, 20), sf::Vector2f(672, 103), sf::Color(246, 153, 63), this->font);
+	Button* color3 = new Button(sf::Vector2f(60, 20), sf::Vector2f(738, 103), sf::Color(255, 237, 74), this->font);
+	Button* color4 = new Button(sf::Vector2f(60, 20), sf::Vector2f(606, 129), sf::Color(56, 193, 114), this->font);
+	Button* color5 = new Button(sf::Vector2f(60, 20), sf::Vector2f(672, 129), sf::Color(77, 192, 181), this->font);
+	Button* color6 = new Button(sf::Vector2f(60, 20), sf::Vector2f(738, 129), sf::Color(52, 144, 220), this->font);
+	Button* color7 = new Button(sf::Vector2f(60, 20), sf::Vector2f(606, 155), sf::Color(101, 116, 205), this->font);
+	Button* color8 = new Button(sf::Vector2f(60, 20), sf::Vector2f(672, 155), sf::Color(149, 97, 226), this->font);
+	Button* color9 = new Button(sf::Vector2f(60, 20), sf::Vector2f(738, 155), sf::Color(246, 109, 155), this->font);
+	this->colorList.push_back(color1);
+	this->colorList.push_back(color2);
+	this->colorList.push_back(color3);
+	this->colorList.push_back(color4);
+	this->colorList.push_back(color5);
+	this->colorList.push_back(color6);
+	this->colorList.push_back(color7);
+	this->colorList.push_back(color8);
+	this->colorList.push_back(color9);
 
 	while (this->window.isOpen()) {
 		while (this->window.pollEvent(event)) {
@@ -333,20 +691,35 @@ void Application::start() {
 				else {
 					updateFigureButton.setColor(sf::Color(245, 127, 10));
 				}
+				if (saveFile.isMouseOver(this->window)) {
+					saveFile.setColor(sf::Color(99, 189, 47));
+				}
+				else {
+					saveFile.setColor(sf::Color(119, 227, 57));
+				}
+				if (loadFile.isMouseOver(this->window)) {
+					loadFile.setColor(sf::Color(99, 189, 47));
+				}
+				else {
+					loadFile.setColor(sf::Color(119, 227, 57));
+				}
 			}
 			if (event.type == sf::Event::MouseButtonPressed) {
 				if (createFigureButton.isMouseOver(this->window)) {
-					if (this->selectedFigureType == polygonButton) {
-						this->createPolygon(input1, input2);
+					if (this->selectedColor == nullptr) {
+						continue;
+					}
+					else if (this->selectedFigureType == polygonButton) {
+						this->createPolygon(input1->textStream.str(), input2->textStream.str(), selectedColor->getColor());
 					}
 					else if (this->selectedFigureType == rectangleButton) {
-						this->createRectangle(input1, input2, input3);
+						this->createRectangle(input1->textStream.str(), input2->textStream.str(), input3->textStream.str(), selectedColor->getColor());
 					}
 					else if (this->selectedFigureType == circleButton) {
-						this->createCircle(input1, input2, input3);
+						this->createCircle(input1->textStream.str(), input2->textStream.str(), input3->textStream.str(), selectedColor->getColor());
 					}
 					else if (this->selectedFigureType == squareButton) {
-						this->createSquare(input1, input2, input3);
+						this->createSquare(input1->textStream.str(), input2->textStream.str(), input3->textStream.str(), selectedColor->getColor());
 					}
 					if (this->selectedFigureType != nullptr) {
 						this->selectedFigureType->setColor(sf::Color(181, 201, 232));
@@ -363,20 +736,20 @@ void Application::start() {
 					}
 				}
 				if (updateFigureButton.isMouseOver(this->window)) {
-					if (this->selectedFigure == nullptr) {
+					if (this->selectedFigure == nullptr || this->selectedColor == nullptr) {
 						continue;
 					}
 					else if (this->selectedFigureType == polygonButton) {
-						this->selectedFigure->updateFigure(input1, input2);
+						this->selectedFigure->updateFigure(input1, input2, selectedColor->getColor());
 					}
 					else if (this->selectedFigureType == rectangleButton) {
-						this->selectedFigure->updateFigure(input1, input2, input3);
+						this->selectedFigure->updateFigure(input1, input2, input3, selectedColor->getColor());
 					}
 					else if (this->selectedFigureType == circleButton) {
-						this->selectedFigure->updateFigure(input1, input2, input3);
+						this->selectedFigure->updateFigure(input1, input2, input3, selectedColor->getColor());
 					}
 					else if (this->selectedFigureType == squareButton) {
-						this->selectedFigure->updateFigure(input1, input2, input3);
+						this->selectedFigure->updateFigure(input1, input2, input3, selectedColor->getColor());
 					}
 					if (this->selectedFigureType != nullptr) {
 						this->selectedFigureType->setColor(sf::Color(181, 201, 232));
@@ -385,6 +758,12 @@ void Application::start() {
 					for (int i = 0; i < this->textInputList.size(); i++) {
 						this->textInputList[i]->clearText();
 					}
+				}
+				if (saveFile.isMouseOver(this->window)) {
+					this->saveToFile(input4);
+				}
+				if (loadFile.isMouseOver(this->window)) {
+					this->loadFromFile(input4);
 				}
 				// Figures list
 				for (int i = 0; i < this->figuresList.size(); i++) {
@@ -424,6 +803,20 @@ void Application::start() {
 						this->selectedTextInput = this->textInputList[i];
 					}
 				}
+				// Color list
+				for (int i = 0; i < this->colorList.size(); i++) {
+					if (this->colorList[i]->isMouseOver(this->window) && this->selectedColor) {
+						for (int i = 0; i < this->colorList.size(); i++) {
+							this->colorList[i]->buttonVisual.setOutlineColor(sf::Color::Black);
+							this->colorList[i]->buttonVisual.setOutlineThickness(0);
+						}
+					}
+					if (this->colorList[i]->isMouseOver(this->window)) {
+						this->colorList[i]->buttonVisual.setOutlineColor(sf::Color::Black);
+						this->colorList[i]->buttonVisual.setOutlineThickness(3);
+						this->selectedColor = this->colorList[i];
+					}
+				}
 				// Figure types list
 				for (int i = 0; i < this->buttonList.size(); i++) {
 					if (this->buttonList[i]->isMouseOver(this->window) && this->selectedFigureType) {
@@ -441,7 +834,6 @@ void Application::start() {
 		
 		this->window.clear(sf::Color::White);
 		this->window.draw(menuBorder);
-		this->window.draw(menuButtonsLine);
 		this->window.draw(menuTextBoxLine);
 
 		createFigureButton.draw(this->window);
@@ -467,16 +859,22 @@ void Application::start() {
 			input2->draw(this->window);
 			input3->draw(this->window);
 		}
+		input4->draw(this->window);
 		polygonButton->draw(this->window);
 		rectangleButton->draw(this->window);
 		circleButton->draw(this->window);
 		squareButton->draw(this->window);
+		saveFile.draw(this->window);
+		loadFile.draw(this->window);
 
 		for (int i = 0; i < this->figuresList.size(); i++) {
 			this->window.draw(*this->figuresList[i]);
 			this->figuresList[i]->menuButton.draw(this->window);
 		}
 
+		for (int i = 0; i < this->colorList.size(); i++) {
+			this->colorList[i]->draw(this->window);
+		}
 		this->window.draw(xAxis);
 		this->window.draw(yAxis);
 		this->window.display();

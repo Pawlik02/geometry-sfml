@@ -7,8 +7,9 @@ class Square: public Rectangle
 		~Square();
 		double getArea() const;
 		double getPerimeter() const;
-		void updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* widthInput);
+		void updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* widthInput, sf::Color color);
 		int width;
+		std::string print();
 	private:
 		sf::Vector2f getPoint(std::size_t index) const;
 };
