@@ -52,7 +52,7 @@ double Polygon::getPerimeter() const {
 	return perimeter;
 }
 
-void Polygon::updateFigure(TextInput* nameInput, TextInput* verticiesInput) {
+void Polygon::updateFigure(TextInput* nameInput, TextInput* verticiesInput, sf::Color color) {
 	std::string verticiesText = verticiesInput->textStream.str();
 	std::string tempNumber;
 	std::vector<sf::Vector2f> verticies;
@@ -86,13 +86,30 @@ void Polygon::updateFigure(TextInput* nameInput, TextInput* verticiesInput) {
 		Application* app = Application::getInstance();
 		this->name = nameInput->textStream.str();
 		this->verticies = verticies;
-		this->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 53 + static_cast<float>(app->figuresList.size() - 1) * 50),
-			sf::Color::Yellow, app->font, this->name + "\nArea:" + std::to_string(this->getArea())
-		+ std::to_string(this->getArea()) + "\nPerimeter:" + std::to_string(this->getPerimeter()) };
+		this->setFillColor(color);
+		this->setOutlineColor(color);
+		this->menuButton = { sf::Vector2f(199, 50), sf::Vector2f(603, 178 + static_cast<float>(app->figuresList.size() - 1) * 50),
+			sf::Color::Yellow, app->font, this->name + "\nArea:" + std::to_string(this->getArea()) + "\nPerimeter:" +
+			std::to_string(this->getPerimeter()) };
 		this->update();
 	}
 }
 
-void Polygon::updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput) {
+void Polygon::updateFigure(TextInput* nameInput, TextInput* positionInput, TextInput* dimensionsInput, sf::Color color) {
 	std::cout << "MOCKUP";
+}
+
+std::string Polygon::print() {
+	std::string text;
+	std::string color;
+	for (int i = 0; i < this->verticies.size(); i++) {
+		text += "(";
+		text += std::to_string(this->verticies[i].x - 300);
+		text += ", ";
+		text += std::to_string(-this->verticies[i].y + 300);
+		text += ");";
+	}
+	color = "(" + std::to_string(this->getFillColor().r) + ", " + std::to_string(this->getFillColor().g) + ", " + std::to_string(this->getFillColor().b) + ")";
+	text.pop_back();
+	return "{\"type\":\"Polygon\",\"name\":\"" + this->name + "\",\"verticies\":\"" + text + "\",\"color\":\"" + color + "\"}\n";
 }
