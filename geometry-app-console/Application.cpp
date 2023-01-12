@@ -300,7 +300,7 @@ void Application::loadFromFile(TextInput* fileNameInput) {
 	while (getline(file, line)) {
 		if (line.substr(0, 26) == "{\"type\":\"Polygon\",\"name\":\"") {
 			i = line.find("name") + 7;
-			while(!readValue) {
+			while (!readValue) {
 				if (line[i] == '"') {
 					readValue = true;
 				}
@@ -577,7 +577,6 @@ void Application::loadFromFile(TextInput* fileNameInput) {
 			readValue = false;
 			this->createSquare(name, position, width, sf::Color(std::stoi(r), std::stoi(g), std::stoi(b)));
 		}
-
 		name = "";
 		verticies = "";
 		position = "";
@@ -706,27 +705,32 @@ void Application::start() {
 			}
 			if (event.type == sf::Event::MouseButtonPressed) {
 				if (createFigureButton.isMouseOver(this->window)) {
-					if (this->selectedColor == nullptr) {
-						continue;
+					try {
+						if (this->selectedColor == nullptr) {
+							throw Exception("Nie ma koloru!");
+						}
+						else if (this->selectedFigureType == polygonButton) {
+							this->createPolygon(input1->textStream.str(), input2->textStream.str(), selectedColor->getColor());
+						}
+						else if (this->selectedFigureType == rectangleButton) {
+							this->createRectangle(input1->textStream.str(), input2->textStream.str(), input3->textStream.str(), selectedColor->getColor());
+						}
+						else if (this->selectedFigureType == circleButton) {
+							this->createCircle(input1->textStream.str(), input2->textStream.str(), input3->textStream.str(), selectedColor->getColor());
+						}
+						else if (this->selectedFigureType == squareButton) {
+							this->createSquare(input1->textStream.str(), input2->textStream.str(), input3->textStream.str(), selectedColor->getColor());
+						}
+						if (this->selectedFigureType != nullptr) {
+							this->selectedFigureType->setColor(sf::Color(181, 201, 232));
+							this->selectedFigureType = nullptr;
+						}
+						for (int i = 0; i < this->textInputList.size(); i++) {
+							this->textInputList[i]->clearText();
+						}
 					}
-					else if (this->selectedFigureType == polygonButton) {
-						this->createPolygon(input1->textStream.str(), input2->textStream.str(), selectedColor->getColor());
-					}
-					else if (this->selectedFigureType == rectangleButton) {
-						this->createRectangle(input1->textStream.str(), input2->textStream.str(), input3->textStream.str(), selectedColor->getColor());
-					}
-					else if (this->selectedFigureType == circleButton) {
-						this->createCircle(input1->textStream.str(), input2->textStream.str(), input3->textStream.str(), selectedColor->getColor());
-					}
-					else if (this->selectedFigureType == squareButton) {
-						this->createSquare(input1->textStream.str(), input2->textStream.str(), input3->textStream.str(), selectedColor->getColor());
-					}
-					if (this->selectedFigureType != nullptr) {
-						this->selectedFigureType->setColor(sf::Color(181, 201, 232));
-						this->selectedFigureType = nullptr;
-					}
-					for (int i = 0; i < this->textInputList.size(); i++) {
-						this->textInputList[i]->clearText();
+					catch (Exception exp) {
+						std::cout << "Error: " << exp.getNumber() << ", message: " << exp.getMessage() << '\n';
 					}
 				}
 				if (deleteFigureButton.isMouseOver(this->window)) {
